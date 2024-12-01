@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import { Progress } from "@/components/ui/progress"
 import { Card } from "@/components/ui/card"
-import { Dhikr, getSessionProgress, getEstimatedTimeRemaining } from '../../lib/adhkar'
+import { Dhikr } from '../../data/adhkar'
 import { Home, Settings } from 'lucide-react'
 
 interface AdhkarSessionProps {
@@ -14,6 +14,7 @@ interface AdhkarSessionProps {
   currentIndex: number
   totalAdhkar: number
   category: 'morning' | 'evening'
+  overallProgress: number
 }
 
 export default function AdhkarSession({
@@ -24,22 +25,16 @@ export default function AdhkarSession({
   goHome,
   currentIndex,
   totalAdhkar,
-  category
+  category,
+  overallProgress
 }: AdhkarSessionProps) {
   const [count, setCount] = useState(0)
-  const [sessionProgress, setSessionProgress] = useState(0)
-  const [timeRemaining, setTimeRemaining] = useState('')
 
   useEffect(() => {
     if (dhikr) {
       setCount(progress[dhikr.id] || 0)
     }
   }, [dhikr, progress])
-
-  useEffect(() => {
-    setSessionProgress(getSessionProgress(category, progress))
-    setTimeRemaining(getEstimatedTimeRemaining(category, progress))
-  }, [category, progress])
 
   const incrementCount = () => {
     if (dhikr && count < dhikr.repetitions) {
@@ -62,13 +57,13 @@ export default function AdhkarSession({
         </Button>
         <div className="text-center">
           <h2 className="text-xl font-semibold">{category === 'morning' ? 'Morning' : 'Evening'} Adhkar</h2>
-          <p className="text-sm text-gray-500">{currentIndex + 1}/{totalAdhkar} • {timeRemaining} remaining</p>
+          <p className="text-sm text-gray-500">{currentIndex + 1}/{totalAdhkar}</p>
         </div>
         <Button variant="ghost" size="icon">
           <Settings className="h-6 w-6" />
         </Button>
       </div>
-      <Progress value={sessionProgress} className="w-full mb-4" />
+      <Progress value={overallProgress} className="w-full mb-4" />
       <Card className="w-full p-6 mb-4">
         <div className="text-3xl font-bold mb-4 text-right" lang="ar" dir="rtl">{dhikr.arabic}</div>
         <div className="text-lg mb-2">{dhikr.transliteration}</div>
